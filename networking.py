@@ -8,17 +8,16 @@ Packages Used:
 """
 
 import socket
-import time
 import pickle
 
-from host import *
-from node import *
+from host import Host
+from node import Node
 
 class NetworkConnection:
     """Variables that are used to maintain connection """
     s = None
-    conn_hostname = ""
-    conn_port = ""
+    conn_hostname = None
+    conn_port = None
 
     """Initialization"""
     def __init__(self, url, port):
@@ -28,6 +27,10 @@ class NetworkConnection:
 
         print("New networking class created...")
         print("Using Path: " + self.gen_path())
+        
+    def close_conn(self):
+        self.s.shutdown(socket.SHUT_RDWR)
+        self.s.close()
 
 
     """ Member Functions """
@@ -53,11 +56,10 @@ class NetworkConnection:
 class MeshConnection(NetworkConnection):
     def init_conn(self):
         self.s.bind((self.conn_hostname, self.conn_port))
-        self.s.listen(5)
 
     def listen(self):
         print("Listening")
-        #self.s.listen()
+        self.s.listen()
         while True:
             connection, client_addr = self.s.accept()
 
@@ -74,7 +76,6 @@ class MeshConnection(NetworkConnection):
 
         # Clean up the connection
         connection.close()
-        self.s.detach()
         return obj
 
     def recieve_object(self, conn):

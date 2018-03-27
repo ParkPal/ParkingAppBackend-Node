@@ -1,8 +1,6 @@
-from networking import *
-from host import *
-from node import *
-from car_sensor import *
-import pickle
+from networking import WebConnection
+from node import Node
+from car_sensor import CarSensor
 import socket
 
 def main():
@@ -31,8 +29,6 @@ def main():
 			host_conn.init_conn()
 			this_node.set_inUse(tmp)
 			host_conn.transmit_object(this_node)
-			host_conn = None
 			print("CHANGED")
-#			break
 
 main()
