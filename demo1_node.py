@@ -6,22 +6,28 @@ the server.
 
 from networking import WebConnection
 from node import Node
+import sys
 
 def main():
     """ Create an object to represent this parking spot """
+    if sys.argv[1] == "True":
+        status = True
+    else:
+        status = False
     this_spot = Node(1, "192.168.2.2")
-    
+    this_spot.set_inUse(status)
+
     """ Create an object to broadcoast updates to host """
-    mesh_connection = WebConnection("192.168.2.1", 1234)
-    
+    mesh_connection = WebConnection("192.168.2.1", 12345)
+    mesh_connection.init_conn()
+
     """ Create an object to recieve data from sensor """
     # gpio_connection = 
 
-    while True:
-        """ Wait for updates from sensor """
-        
-        """ Broadcast to Host """
-        mesh_connection.transmit_object(this_spot)
+#   while True:
+    """ Wait for updates from sensor """
 
-        
+    """ Broadcast to Host """
+    mesh_connection.transmit_object(this_spot)
+
 main()
