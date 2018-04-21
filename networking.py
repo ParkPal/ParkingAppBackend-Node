@@ -8,17 +8,16 @@ Packages Used:
 """
 
 import socket
-import time
 import pickle
 
-from host import *
-from node import *
+from host import Host
+from node import Node
 
 class NetworkConnection:
     """Variables that are used to maintain connection """
     s = None
-    conn_hostname = ""
-    conn_port = ""
+    conn_hostname = None
+    conn_port = None
 
     """Initialization"""
     def __init__(self, url, port):
@@ -28,6 +27,10 @@ class NetworkConnection:
 
         print("New networking class created...")
         print("Using Path: " + self.gen_path())
+        
+    def close_conn(self):
+        self.s.shutdown(socket.SHUT_RDWR)
+        self.s.close()
 
 
     """ Member Functions """
@@ -49,7 +52,7 @@ class NetworkConnection:
 
     def set_port(self, port):
         self.conn_port = port
-        
+
 class MeshConnection(NetworkConnection):
     def init_conn(self):
         self.s.bind((self.conn_hostname, self.conn_port))
@@ -59,9 +62,9 @@ class MeshConnection(NetworkConnection):
         self.s.listen()
         while True:
             connection, client_addr = self.s.accept()
-            
+
             obj = self.recieve_object(connection)
-            
+
             if type(obj) is Host:
                 tmp = "Host: " + obj.get_name()
             elif type(obj) is Node:
@@ -70,41 +73,41 @@ class MeshConnection(NetworkConnection):
                 tmp = "No Data"
                 print("None")
             print("Connection! Recieved data... | " + tmp)
-            
+
         # Clean up the connection
         connection.close()
         return obj
-    
+
     def recieve_object(self, conn):
         data = conn.recv(1024)
         obj = pickle.loads(data)
         return obj
-            
+
     def req_update(self, node):
         # Ask a node for an update
         print("Requesting...")
-    
+
 class WebConnection(NetworkConnection):
     def init_conn(self):
         self.s.connect((self.conn_hostname, self.conn_port))
 
     def check_in(self):
         print("Checking in with host")
-        
+
     def req_new_lot_id(self):
         """ Asks server for next available host id """
         print("Function not yet implemented...")
         return 0
-    
+
     def register_lot(self, host):
         """ Transmits host object to the server. """
         print("Function not yet implemented...")
         return False
-    
+
     def transmit_bytes(self, data):
         """ Transmits the given byte object """
         self.s.sendall(data)
-        
+
     def transmit_object(self, data):
         """ Will pickle the given object and transmit it. """
         data = pickle.dumps(data)
